@@ -224,6 +224,7 @@ class Water(Place):
         """Add INSECT if it is watersafe, otherwise reduce its armor to 0."""
         # BEGIN Problem 3
         "*** YOUR CODE HERE ***"
+        # We are going to put our code here!! 
         # END Problem 3
 
 
