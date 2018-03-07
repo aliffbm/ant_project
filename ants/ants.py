@@ -247,8 +247,9 @@ class FireAnt(Ant):
 
     name = 'Fire'
     damage = 3
+    food_cost = 5
     # BEGIN Problem 4
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 4
 
     def reduce_armor(self, amount):
@@ -258,6 +259,14 @@ class FireAnt(Ant):
         """
         # BEGIN Problem 4
         "*** YOUR CODE HERE ***"
+        self.armor -= amount
+        if self.armor <= 0:
+
+            for b in self.place.bees[:]:
+                b.reduce_armor(self.damage)
+
+            #self.place.bees = bees
+            self.place.remove_insect(self)
         # END Problem 4
 
 
