@@ -146,7 +146,7 @@ class Bee(Insect):
         """A Bee's action stings the Ant that blocks its exit if it is blocked,
         or moves to the exit of its current place otherwise.
 
-        colony -- The AntColony, used to access game state information.
+        colony -- The AntColony, used to access game state information .
         """
         if self.blocked():
             self.sting(self.place.ant)
