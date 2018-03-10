@@ -280,7 +280,7 @@ class LongThrower(ThrowerAnt):
     name = 'Long'
     food_cost = 2
     # BEGIN Problem 6
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
 
     def __init__(self):
         ThrowerAnt.__init__(self)
@@ -309,7 +309,7 @@ class ShortThrower(ThrowerAnt):
     name = 'Short'
     food_cost = 2
     # BEGIN Problem 6
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     def __init__(self):
         ThrowerAnt.__init__(self)
         self.max_range = 3
@@ -328,6 +328,17 @@ class ShortThrower(ThrowerAnt):
 
 # BEGIN Problem 7
 # The WallAnt class
+class WallAnt(Ant):
+    """WallAnt blocks path utilizing armor until it dies"""
+
+    name = 'Wall'
+    food_cost = 4
+    implemented = True
+
+    def __init__(self, armor = 4):
+        Ant.__init__(self, armor)
+
+
 # END Problem 7
 
 
