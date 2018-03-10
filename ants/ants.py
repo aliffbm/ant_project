@@ -206,21 +206,11 @@ class ThrowerAnt(Ant):
         This method returns None if there is no such Bee (or none in range).
         """
         # BEGIN Problem 5
-        print("entr", self.place.entrance)
-        print("self", self)
-        print("myplace", self.place)
-        print("place", self.place.bees)
-        print("exit", self.place.exit)
-        print("hive", hive.bees)
-        # follow through the entrance until entrance is hive
-        # i.e. while(entrance != hive):
-        #           entrance = entrance.entrance
-        #           if entrance is not empty
-                    # then do the not(self.place.entrance.bees .... statement)
-        if not (self.place.entrance.bees == hive.bees):
-            return random_or_none(self.place.entrance.bees)
-
-        #return random_or_none(self.place.bees)
+        entrance = self.place
+        while entrance != hive:
+            if len(entrance.bees) != 0:
+                return random_or_none(entrance.bees)
+            entrance = entrance.entrance
         # END Problem 5
 
     def throw_at(self, target):
@@ -288,8 +278,28 @@ class LongThrower(ThrowerAnt):
     """A ThrowerAnt that only throws leaves at Bees at least 5 places away."""
 
     name = 'Long'
+    food_cost = 2
     # BEGIN Problem 6
     implemented = False   # Change to True to view in the GUI
+
+    def __init__(self):
+        ThrowerAnt.__init__(self)
+        self.min_range = 5
+
+    def nearest_bee(self, hive):
+        at_min = self.min_range
+        entrance = self.place
+
+        for x in range(5):
+            if entrance == hive:
+                return
+            entrance = entrance.entrance
+
+        while entrance != hive:
+            if len(entrance.bees) != 0:
+                return random_or_none(entrance.bees)
+            entrance = entrance.entrance
+
     # END Problem 6
 
 
@@ -297,8 +307,22 @@ class ShortThrower(ThrowerAnt):
     """A ThrowerAnt that only throws leaves at Bees at most 3 places away."""
 
     name = 'Short'
+    food_cost = 2
     # BEGIN Problem 6
     implemented = False   # Change to True to view in the GUI
+    def __init__(self):
+        ThrowerAnt.__init__(self)
+        self.max_range = 3
+
+    def nearest_bee(self, hive):
+        at_most = self.max_range
+        count = 0
+        entrance = self.place
+        while entrance != hive and count <= at_most:
+            if len(entrance.bees) != 0:
+                return random_or_none(entrance.bees)
+            entrance = entrance.entrance
+            count += 1
     # END Problem 6
 
 
