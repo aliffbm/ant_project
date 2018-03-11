@@ -122,6 +122,7 @@ class Insect(object):
 class Bee(Insect):
     """A Bee moves from place to place, following exits and stinging ants."""
 
+    
     name = 'Bee'
     watersafe = True
     damage = 1
