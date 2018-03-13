@@ -40,12 +40,20 @@ class Place(object):
         There can be any number of Bees in a Place.
         """
         if insect.is_ant:
-            if self.ant is None:
-                self.ant = insect
-            else:
+            if self.ant is not None:
                 # Phase 6: Special handling for BodyguardAnt
                 # BEGIN Problem 11
-                assert self.ant is None, 'Two ants in {0}'.format(self)
+                #assert self.ant is None, 'Two ants in {0}'.format(self)
+                if self.ant.container and self.ant.can_contain(insect):
+                    self.ant.contain_ant(insect)
+                    insect.place = self
+                    return
+                elif insect.container and insect.can_contain(self.ant):
+                    insect.contain_ant(self.ant)
+                    insect.place, self.ant = self, insect
+                    return
+            assert self.ant is None, 'Two ants in {0}'.format(self)
+            self.ant = insect
                 # END Problem 11
         else:
             self.bees.append(insect)
@@ -162,6 +170,7 @@ class Ant(Insect):
     implemented = False  # Only implemented Ant classes should be instantiated
     food_cost = 0
     blocks_path = True # default to true
+    container = False
 
     def __init__(self, armor=1):
         """Create an Ant with an ARMOR quantity."""
@@ -170,6 +179,9 @@ class Ant(Insect):
     def can_contain(self, other):
         # BEGIN Problem 11
         "*** YOUR CODE HERE ***"
+        if self.container and self.ant == None and not other.container:
+                return True
+        return False
         # END Problem 11
 
 
@@ -179,6 +191,7 @@ class HarvesterAnt(Ant):
     name = 'Harvester'
     implemented = True
     food_cost = 2
+    container = False
 
     def action(self, colony):
         """Produce 1 additional food for the COLONY.
@@ -200,6 +213,7 @@ class ThrowerAnt(Ant):
     implemented = True
     damage = 1
     food_cost = 3
+    container = False
 
     def nearest_bee(self, hive):
         """Return the nearest Bee in a Place that is not the HIVE, connected to
@@ -256,6 +270,7 @@ class FireAnt(Ant):
     food_cost = 5
     # BEGIN Problem 4
     implemented = True   # Change to True to view in the GUI
+    container = False
     # END Problem 4
 
     def reduce_armor(self, amount):
@@ -282,6 +297,7 @@ class LongThrower(ThrowerAnt):
     food_cost = 2
     # BEGIN Problem 6
     implemented = True   # Change to True to view in the GUI
+    container = False
 
     def __init__(self):
         ThrowerAnt.__init__(self)
@@ -309,6 +325,7 @@ class ShortThrower(ThrowerAnt):
 
     name = 'Short'
     food_cost = 2
+    container = False
     # BEGIN Problem 6
     implemented = True   # Change to True to view in the GUI
     def __init__(self):
@@ -335,6 +352,7 @@ class WallAnt(Ant):
     name = 'Wall'
     food_cost = 4
     implemented = True
+    container = False
 
     def __init__(self, armor = 4):
         Ant.__init__(self, armor)
@@ -352,6 +370,7 @@ class NinjaAnt(Ant):
     implemented = False   # Change to True to view in the GUI
     blocks_path = False
     food_cost = 5
+    container = False
     # END Problem 8
 
     def action(self, colony):
@@ -371,6 +390,7 @@ class ScubaThrower(ThrowerAnt):
     name = 'Scuba'
     watersafe = True
     implemented = True
+    container = False
 # END Problem 9
 
 
@@ -383,6 +403,7 @@ class HungryAnt(Ant):
     time_to_digest = 3
     implemented = True   # Change to True to view in the GUI
     food_cost = 4
+    container = False
     # END Problem 10
 
     def __init__(self):
@@ -418,6 +439,9 @@ class BodyguardAnt(Ant):
     name = 'Bodyguard'
     # BEGIN Problem 11
     implemented = False   # Change to True to view in the GUI
+    container = True
+    armor = 2
+    food_cost = 4
     # END Problem 11
 
     def __init__(self):
@@ -427,11 +451,14 @@ class BodyguardAnt(Ant):
     def contain_ant(self, ant):
         # BEGIN Problem 11
         "*** YOUR CODE HERE ***"
+        self.ant = ant
         # END Problem 11
 
     def action(self, colony):
         # BEGIN Problem 11
         "*** YOUR CODE HERE ***"
+        if self.ant != None:
+            self.ant.action(colony)
         # END Problem 11
 
 class TankAnt(BodyguardAnt):
