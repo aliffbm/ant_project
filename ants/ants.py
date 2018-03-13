@@ -380,22 +380,36 @@ class HungryAnt(Ant):
     """
     name = 'Hungry'
     # BEGIN Problem 10
-    implemented = False   # Change to True to view in the GUI
+    time_to_digest = 3
+    implemented = True   # Change to True to view in the GUI
+    food_cost = 4
     # END Problem 10
 
     def __init__(self):
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+        self.digesting = 0
+        self.armor = 1
         # END Problem 10
 
     def eat_bee(self, bee):
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+        b = random_or_none(bee)
+        if b is None:
+            return 
+        else:
+            b.reduce_armor(b.armor)
+        self.digesting = self.time_to_digest
         # END Problem 10
 
     def action(self, colony):
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+        if self.digesting > 0:
+            self.digesting -= 1
+        else:
+            self.eat_bee(self.place.bees[:])
         # END Problem 10
 
 

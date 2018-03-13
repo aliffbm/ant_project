@@ -6,3 +6,5 @@
 'Problem 1-correct', (0, 70)
 'Problem 3-correct', (1024, 70)
 'Problem 6-correct', (2560, 70)
+'Problem 9-correct', (4096, 70)
+'Problem 10-correct', (4608, 70)
