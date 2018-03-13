@@ -43,7 +43,6 @@ class Place(object):
             if self.ant is not None:
                 # Phase 6: Special handling for BodyguardAnt
                 # BEGIN Problem 11
-                #assert self.ant is None, 'Two ants in {0}'.format(self)
                 if self.ant.container and self.ant.can_contain(insect):
                     self.ant.contain_ant(insect)
                     insect.place = self
@@ -465,13 +464,18 @@ class TankAnt(BodyguardAnt):
     """TankAnt provides both offensive and defensive capabilities."""
     name = 'Tank'
     damage = 1
+    food_cost = 6
+    armor = 2
     # BEGIN Problem 12
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     # END Problem 12
 
     def action(self, colony):
         # BEGIN Problem 12
         "*** YOUR CODE HERE ***"
+        for b in self.place.bees[:]:
+            b.reduce_armor(self.damage)
+        BodyguardAnt.action(self, colony)
         # END Problem 12
 
 # BEGIN Problem 13
