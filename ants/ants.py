@@ -68,21 +68,32 @@ class Place(object):
 
         A Bee is just removed from the list of Bees.
         """
+        place = insect.place
+        insect.current_place = None
         if insect.is_ant:
             # Phase 6: Special Handling for BodyguardAnt and QueenAnt
-            if self.ant is insect:
+            if hasattr(self.ant, 'real_queen') and self.ant.real_queen:
+                insect.current_place = place
+            elif self.ant is insect:
                 if hasattr(self.ant, 'container') and self.ant.container:
                     self.ant = self.ant.ant
                 else:
                     self.ant = None
             else:
                 if hasattr(self.ant, 'container') and self.ant.container and self.ant.ant is insect:
-                    self.ant.ant = None
+                    if hasattr(self.ant.ant, 'real_queen') and self.ant.ant.real_queen:
+                        self.ant.ant = self.ant.ant
+                        insect.current_place = place
+                        return
+                    else:
+                        self.ant.ant = None
+
                 else:
                     assert False, '{0} is not in {1}'.format(insect, self)
         else:
             self.bees.remove(insect)
-
+            insect.place = None
+            
         insect.place = None
 
     def __str__(self):
@@ -166,7 +177,7 @@ class Ant(Insect):
     """An Ant occupies a place and does work for the colony."""
 
     is_ant = True
-    implemented = False  # Only implemented Ant classes should be instantiated
+    implemented = True  # Only implemented Ant classes should be instantiated
     food_cost = 0
     blocks_path = True # default to true
     container = False
@@ -366,7 +377,7 @@ class NinjaAnt(Ant):
     name = 'Ninja'
     damage = 1
     # BEGIN Problem 8
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     blocks_path = False
     food_cost = 5
     container = False
@@ -437,7 +448,7 @@ class BodyguardAnt(Ant):
     """BodyguardAnt provides protection to other Ants."""
     name = 'Bodyguard'
     # BEGIN Problem 11
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
     container = True
     armor = 2
     food_cost = 4
@@ -479,18 +490,30 @@ class TankAnt(BodyguardAnt):
         # END Problem 12
 
 # BEGIN Problem 13
-class QueenAnt(Ant):  # You should change this line
+class QueenAnt(ScubaThrower):  # You should change this line
 # END Problem 13
     """The Queen of the colony. The game is over if a bee enters her place."""
 
     name = 'Queen'
     # BEGIN Problem 13
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
+    food_cost = 7
+    real_queen = True
+    double_ants = []
+
     # END Problem 13
 
     def __init__(self):
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+        Ant.__init__(self)
+        if QueenAnt.real_queen == True:
+            self.real_queen = True
+            QueenAnt.real_queen = False
+        else:
+            self.real_queen = False
+            self.is_ant = False
+
         # END Problem 13
 
     def action(self, colony):
@@ -501,6 +524,25 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+        if self.real_queen == False:
+            self.reduce_armor(self.armor)
+            return
+        else:
+            self.throw_at(self.nearest_bee(colony.hive))
+            queen_place = self.place.exit
+            while queen_place:
+                if queen_place.ant:
+                    place_ant = queen_place.ant
+                    if place_ant.container:
+                        if place_ant.ant and place_ant.ant not in self.double_ants:
+                            place_ant.ant.damage *= 2
+                            self.double_ants.append(place_ant.ant)
+                    if place_ant and place_ant not in self.double_ants:
+                        place_ant.damage *= 2
+                        self.double_ants.append(place_ant)
+                queen_place = queen_place.exit
+
+        
         # END Problem 13
 
     def reduce_armor(self, amount):
@@ -509,13 +551,19 @@ class QueenAnt(Ant):  # You should change this line
         """
         # BEGIN Problem 13
         "*** YOUR CODE HERE ***"
+        self.armor -= amount
+        if self.armor <= 0 and self.real_queen:
+            return bees_win()
+        elif self.armor <= 0 and not self.real_queen:
+            self.place.remove_insect(self)
+
         # END Problem 13
 
 class AntRemover(Ant):
     """Allows the player to remove ants from the board in the GUI."""
 
     name = 'Remover'
-    implemented = False
+    implemented = True
 
     def __init__(self):
         Ant.__init__(self, 0)
